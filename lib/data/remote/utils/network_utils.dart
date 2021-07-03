@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:blood_glucose/data/remote/resource.dart';
+import 'package:blood_glucose/core/model/resource.dart';
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart'; 
 
