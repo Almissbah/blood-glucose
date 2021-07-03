@@ -8,8 +8,7 @@ import 'package:blood_glucose/domain/repo/blood_glucose_repo.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../injection.dart';
-import '../../domain/model/repo_samples_data.dart';
-import '../../domain/model/samples_data_model.dart';
+import '../../domain/model/repo_samples_data.dart'; 
 
 @Singleton(as: BloodGlucoseRepository, env: [Env.prod])
 class BloodGlucoseRepoImpl extends BloodGlucoseRepository {
