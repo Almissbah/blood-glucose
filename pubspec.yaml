@@ -31,7 +31,7 @@ dependencies:
   get_it:     
   shared_preferences:  
   easy_localization:   
-
+  fl_chart: ^0.36.2
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
