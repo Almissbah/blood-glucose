@@ -1,5 +1,6 @@
 import 'package:blood_glucose/presentation/bloc/samples_bloc.dart';
 import 'package:blood_glucose/presentation/ui/widget/line_chart.dart';
+import 'package:blood_glucose/presentation/utils/date_time_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,12 +14,12 @@ class GlucoseChartScreen extends StatefulWidget {
 
 class _GlucoseChartScreenState extends State<GlucoseChartScreen> {
   SamplesBloc _samplesBloc;
-  DateTime startDate;
-  DateTime endDate;
+  DateTime _startDate;
+  DateTime _endDate;
   @override
   void initState() {
     _samplesBloc = BlocProvider.of<SamplesBloc>(context);
-    _samplesBloc.loadSamples(startDate: null, endDate: null);
+    _loadSamples();
     super.initState();
   }
 
@@ -34,11 +35,37 @@ class _GlucoseChartScreenState extends State<GlucoseChartScreen> {
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
-          SizedBox(height: 50,),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [Text("START DATE"), Text("END DATE")],
+          SizedBox(
+            height: 50,
           ),
-          SizedBox(height: 20,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _datePickerWidget(
+                label: "START DATE",
+                currentDate: _startDate,
+                onPicked: (date) {
+                  setState(() {
+                    _startDate = date;
+                    _loadSamples();
+                  });
+                },
+              ),
+              _datePickerWidget(
+                label: "END DATE",
+                currentDate: _endDate,
+                onPicked: (date) {
+                  setState(() {
+                    _endDate = date;
+                    _loadSamples();
+                  });
+                },
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 20,
+          ),
           Expanded(
             child: BlocBuilder<SamplesBloc, SamplesState>(
               builder: (context, state) {
@@ -55,6 +82,30 @@ class _GlucoseChartScreenState extends State<GlucoseChartScreen> {
         ],
       ),
     );
+  }
+
+  Widget _datePickerWidget(
+      {Function(DateTime date) onPicked, String label, DateTime currentDate}) {
+    return InkWell(
+      onTap: () {
+        DateTimeUtils.showDatePicker(context, onConfirm: onPicked);
+      },
+      child: Container(
+        child: Column(
+          children: [
+            Text(label),
+            Text(
+              " ${currentDate != null ? DateTimeUtils.formatDate(currentDate) : ""}",
+              style: TextStyle(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  _loadSamples() {
+    _samplesBloc.loadSamples(startDate: _startDate, endDate: _endDate);
   }
 
   Column _buildSuccessState(SamplesSuccessState state) {
