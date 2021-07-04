@@ -13,6 +13,8 @@ class GlucoseChartScreen extends StatefulWidget {
 
 class _GlucoseChartScreenState extends State<GlucoseChartScreen> {
   SamplesBloc _samplesBloc;
+  DateTime startDate;
+  DateTime endDate;
   @override
   void initState() {
     _samplesBloc = BlocProvider.of<SamplesBloc>(context);
@@ -28,22 +30,30 @@ class _GlucoseChartScreenState extends State<GlucoseChartScreen> {
   }
 
   Widget _buildBody() {
-    return Column(
-      children: [
-        Expanded(
-                  child: BlocBuilder<SamplesBloc, SamplesState>(
-            builder: (context, state) {
-              if (state is SamplesSuccessState) {
-                return _buildSuccessState(state);
-              } else if (state is SamplesFailureState) {
-                return _buildFailuerState(state);
-              } else {
-                return _buildLoadingState();
-              }
-            },
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          SizedBox(height: 50,),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [Text("START DATE"), Text("END DATE")],
           ),
-        ),
-      ],
+          SizedBox(height: 20,),
+          Expanded(
+            child: BlocBuilder<SamplesBloc, SamplesState>(
+              builder: (context, state) {
+                if (state is SamplesSuccessState) {
+                  return _buildSuccessState(state);
+                } else if (state is SamplesFailureState) {
+                  return _buildFailuerState(state);
+                } else {
+                  return _buildLoadingState();
+                }
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -51,10 +61,46 @@ class _GlucoseChartScreenState extends State<GlucoseChartScreen> {
     return Column(
       children: [
         GlucoseLineChart(state.data),
-        Row(children: [
-          Text("max ${state.data.maxValue}")
-        ],)
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildValueWidget(label: "Minimum", value: state.data.minValue),
+            _buildValueWidget(label: "Maximum", value: state.data.maxValue),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildValueWidget(label: "Avarage", value: state.data.avrageValue),
+            _buildValueWidget(label: "Median", value: state.data.medianValue),
+          ],
+        )
       ],
+    );
+  }
+
+  Widget _buildValueWidget({String label, double value}) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        width: 150,
+        decoration: BoxDecoration(
+            border: Border.all(color: Colors.red),
+            borderRadius: BorderRadius.all(Radius.circular(10))),
+        padding: EdgeInsets.all(5),
+        child: Column(
+          children: [
+            Text(
+              label,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              "${value}",
+              style: TextStyle(fontSize: 12),
+            )
+          ],
+        ),
+      ),
     );
   }
 
