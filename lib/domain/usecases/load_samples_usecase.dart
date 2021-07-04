@@ -17,8 +17,8 @@ class LoadSamples extends BaseUseCase<SamplesDataModel, FilterDataRequest> {
       RepoSamplesData data = result.payload;
       var samplesData = SamplesDataModel(
           samples: data.samples,
-          startDate: params.startDate,
-          endDate: params.endDate,
+          startDate: _getStartDate(params, data),
+          endDate: _getEndDate(params, data),
           maxValue: _getMaxValue(data.samples),
           minValue: _getMinValue(data.samples),
           avrageValue: _getAvarageValue(data.samples),
@@ -79,5 +79,21 @@ class LoadSamples extends BaseUseCase<SamplesDataModel, FilterDataRequest> {
     }
 
     return median;
+  }
+
+  _getStartDate(FilterDataRequest params, RepoSamplesData data) {
+    try {
+      return params.startDate ?? data.samples[0].timeStamp;
+    } catch (e) {
+      return DateTime.now().subtract(Duration(days: 30));
+    }
+  }
+
+  _getEndDate(FilterDataRequest params, RepoSamplesData data) {
+    try {
+      return params.endDate ?? data.samples.last.timeStamp;
+    } catch (e) {
+      return DateTime.now().subtract(Duration(days: 30));
+    }
   }
 }
