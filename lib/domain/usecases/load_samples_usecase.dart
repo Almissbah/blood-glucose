@@ -39,7 +39,7 @@ class LoadSamples extends BaseUseCase<SamplesDataModel, FilterDataRequest> {
       sum += element.value;
     });
 
-    return sum / list.length;
+    return ((sum / list.length)*100).round()/100;
   }
 
   double _getMinValue(List<BloodSample> list) {
