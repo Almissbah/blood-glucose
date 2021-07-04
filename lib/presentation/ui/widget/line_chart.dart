@@ -15,54 +15,60 @@ class _LineChartState extends State<GlucoseLineChart> {
   bool heightlightMin = true;
   @override
   Widget build(BuildContext context) {
+    var spots = _get100ItemsList();
     return Container(
       padding: EdgeInsets.all(10),
       width: double.infinity,
       height: 500,
-      child: LineChart(
-        LineChartData(
-            borderData: FlBorderData(show: true),
-            lineBarsData: [
-              LineChartBarData(
-                  dotData: FlDotData(
-                    checkToShowDot: (spot, barData) {
-                      return true;
-                    },
-                    getDotPainter: (spot, percent, barData, index) {
-                      if (barData.spots[index].y == widget.data.maxValue &&
-                          heightlightMax) {
-                        return FlDotCirclePainter(
-                            radius: 0,
-                            color: Colors.white,
-                            strokeWidth: 8,
-                            strokeColor: Colors.green);
-                      } else if (barData.spots[index].y ==
-                              widget.data.minValue &&
-                          heightlightMin) {
-                        return FlDotTringlePainter(
-                          size: 16,
-                          color: Colors.white,
-                          strokeWidth: 5,
-                          strokeColor: Colors.deepOrange,
-                        );
-                      }
-                      return FlDotCirclePainter(
-                          radius: 2,
-                          color: Colors.white,
-                          strokeWidth: 2,
-                          strokeColor: Colors.deepOrange);
-                    },
+      child: (spots != null && spots.isNotEmpty)
+          ? LineChart(
+              LineChartData(
+                  borderData: FlBorderData(show: true),
+                  lineBarsData: [
+                    LineChartBarData(
+                        dotData: FlDotData(
+                          checkToShowDot: (spot, barData) {
+                            return true;
+                          },
+                          getDotPainter: (spot, percent, barData, index) {
+                            if (barData.spots[index].y ==
+                                    widget.data.maxValue &&
+                                heightlightMax) {
+                              return FlDotCirclePainter(
+                                  radius: 0,
+                                  color: Colors.white,
+                                  strokeWidth: 8,
+                                  strokeColor: Colors.green);
+                            } else if (barData.spots[index].y ==
+                                    widget.data.minValue &&
+                                heightlightMin) {
+                              return FlDotTringlePainter(
+                                size: 16,
+                                color: Colors.white,
+                                strokeWidth: 5,
+                                strokeColor: Colors.deepOrange,
+                              );
+                            }
+                            return FlDotCirclePainter(
+                                radius: 2,
+                                color: Colors.white,
+                                strokeWidth: 2,
+                                strokeColor: Colors.deepOrange);
+                          },
+                        ),
+                        spots: _get100ItemsList())
+                  ],
+                  titlesData: FlTitlesData(
+                    show: false,
+                    bottomTitles: SideTitles(showTitles: true, interval: 2),
                   ),
-                  spots: _get100ItemsList())
-            ],
-            titlesData: FlTitlesData(
-              show: false,
-              bottomTitles: SideTitles(showTitles: true, interval: 2),
-            ),
-            axisTitleData: FlAxisTitleData(
-                bottomTitle: AxisTitle(titleText: "Time", showTitle: true),
-                leftTitle: AxisTitle(titleText: "value", showTitle: true))),
-      ),
+                  axisTitleData: FlAxisTitleData(
+                      bottomTitle:
+                          AxisTitle(titleText: "Time", showTitle: true),
+                      leftTitle:
+                          AxisTitle(titleText: "value", showTitle: true))),
+            )
+          : Center(child: Container(child: Text("No Data"))),
     );
   }
 
@@ -85,16 +91,19 @@ class _LineChartState extends State<GlucoseLineChart> {
     });
   }
 
-List<FlSpot>  _get100ItemsList() {
-    var list = widget.data.samples
+  List<FlSpot> _get100ItemsList() {
+    var list = widget.data.samples;
+    var range = 100;
+    if (list.length < 100) {
+      range = list.length;
+    }
+    var filteredList = widget.data.samples
         .map((e) => FlSpot(
-            (e.timeStamp.millisecondsSinceEpoch/1000000)
-                .toDouble(),
-            e.value))
+            (e.timeStamp.millisecondsSinceEpoch / 1000000).toDouble(), e.value))
         .toList()
-        .getRange(0, 100)
+        .getRange(0, range)
         .toList();
-    return list;
+    return filteredList;
   }
 }
 

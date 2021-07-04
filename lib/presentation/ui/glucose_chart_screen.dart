@@ -1,3 +1,4 @@
+import 'package:blood_glucose/domain/model/samples_data_model.dart';
 import 'package:blood_glucose/presentation/bloc/samples_bloc.dart';
 import 'package:blood_glucose/presentation/ui/widget/line_chart.dart';
 import 'package:blood_glucose/presentation/utils/date_time_utils.dart';
@@ -35,37 +36,6 @@ class _GlucoseChartScreenState extends State<GlucoseChartScreen> {
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
-          SizedBox(
-            height: 50,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _datePickerWidget(
-                label: "START DATE",
-                currentDate: _startDate,
-                onPicked: (date) {
-                  setState(() {
-                    _startDate = date;
-                    _loadSamples();
-                  });
-                },
-              ),
-              _datePickerWidget(
-                label: "END DATE",
-                currentDate: _endDate,
-                onPicked: (date) {
-                  setState(() {
-                    _endDate = date;
-                    _loadSamples();
-                  });
-                },
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 20,
-          ),
           Expanded(
             child: BlocBuilder<SamplesBloc, SamplesState>(
               builder: (context, state) {
@@ -88,7 +58,7 @@ class _GlucoseChartScreenState extends State<GlucoseChartScreen> {
       {Function(DateTime date) onPicked, String label, DateTime currentDate}) {
     return InkWell(
       onTap: () {
-        DateTimeUtils.showDatePicker(context, onConfirm: onPicked);
+        DateTimeUtils.showDatePicker(context, onConfirm: onPicked,currentTime:currentDate );
       },
       child: Container(
         child: Column(
@@ -111,6 +81,7 @@ class _GlucoseChartScreenState extends State<GlucoseChartScreen> {
   Column _buildSuccessState(SamplesSuccessState state) {
     return Column(
       children: [
+        _buildDatePickers(state.data),
         GlucoseLineChart(state.data),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -163,11 +134,51 @@ class _GlucoseChartScreenState extends State<GlucoseChartScreen> {
     );
   }
 
-  Column _buildLoadingState() {
-    return Column(
+  Widget _buildLoadingState() {
+    return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
-      children: [CircularProgressIndicator()],
+      children: [Container(child: CircularProgressIndicator())],
+    );
+  }
+
+  _buildDatePickers(SamplesDataModel data) {
+    _startDate = data.startDate;
+    _endDate = data.endDate;
+    return Column(
+      children: [
+        SizedBox(
+          height: 50,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _datePickerWidget(
+              label: "START DATE",
+              currentDate: _startDate,
+              onPicked: (date) {
+                setState(() {
+                  _startDate = date;
+                  _loadSamples();
+                });
+              },
+            ),
+            _datePickerWidget(
+              label: "END DATE",
+              currentDate: _endDate,
+              onPicked: (date) {
+                setState(() {
+                  _endDate = date;
+                  _loadSamples();
+                });
+              },
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 20,
+        ),
+      ],
     );
   }
 }
