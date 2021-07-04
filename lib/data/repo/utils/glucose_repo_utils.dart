@@ -47,7 +47,9 @@ class GlucoseRepoUtils {
     }
 
     var list = cache.samples.where(filter).toList();
-
+    list.sort((a, b) {
+      return a.timeStamp.compareTo(b.timeStamp);
+    });
     return RepoSamplesData(list, cache.unit);
   }
 
