@@ -33,18 +33,23 @@ class LoadSamples extends BaseUseCase<SamplesDataModel, FilterDataRequest> {
   }
 
   double _getAvarageValue(List<BloodSample> list) {
+    if(list.isEmpty) return 0;
     double sum = 0;
 
     list.forEach((element) {
       sum += element.value;
     });
 
-    return ((sum / list.length)*100).round()/100;
+    try {
+      return ((sum / list.length) * 100).round().toDouble() / 100;
+    } catch (e) {
+      return 0;
+    }
   }
 
   double _getMinValue(List<BloodSample> list) {
+    if(list.isEmpty) return 0;
     double currentMinValue = double.maxFinite;
-
     list.forEach((element) {
       if (element.value <= currentMinValue) {
         currentMinValue = element.value;
@@ -54,6 +59,7 @@ class LoadSamples extends BaseUseCase<SamplesDataModel, FilterDataRequest> {
   }
 
   double _getMaxValue(List<BloodSample> list) {
+    if(list.isEmpty) return 0;
     double currentMaxValue = double.minPositive;
 
     list.forEach((element) {
@@ -65,6 +71,7 @@ class LoadSamples extends BaseUseCase<SamplesDataModel, FilterDataRequest> {
   }
 
   double _getMedianValue(List<BloodSample> mList) {
+    if (mList.isEmpty) return 0;
     List<double> doubleList = mList.map((e) => e.value).toList();
 
     doubleList.sort((a, b) => a.compareTo(b));
