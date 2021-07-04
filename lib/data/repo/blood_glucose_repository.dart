@@ -32,6 +32,7 @@ class BloodGlucoseRepoImpl extends BloodGlucoseRepository {
     var result = GlucoseRepoUtils.getRepoSamplesData(response);
 
     if (result is SuccessResource) {
+      var cache=result.payload;
       var data = GlucoseRepoUtils.filterSamplesByDateRange(cache, request);
       return Future.value(SuccessResource(data));
     } else

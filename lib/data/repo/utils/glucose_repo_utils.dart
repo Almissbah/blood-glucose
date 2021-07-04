@@ -25,18 +25,22 @@ class GlucoseRepoUtils {
 
   static RepoSamplesData filterSamplesByDateRange(
       RepoSamplesData cache, FilterDataRequest request) {
-    DateTime startDate = request.startDate.subtract(Duration(days: 1));
-    DateTime endDate = request.endDate.add(Duration(days: 1));
+    DateTime startDate;
+    DateTime endDate;
     bool Function(BloodSample element) filter;
 
     if (request.startDate != null && request.endDate != null) {
+      startDate = request.startDate.subtract(Duration(days: 1));
+      endDate = request.endDate.add(Duration(days: 1));
       filter = (element) =>
           startDate.isBefore(element.timeStamp) &&
           endDate.isAfter(element.timeStamp);
     }
     if (request.startDate != null) {
+      startDate = request.startDate.subtract(Duration(days: 1));
       filter = (element) => startDate.isBefore(element.timeStamp);
     } else if (request.endDate != null) {
+      endDate = request.endDate.add(Duration(days: 1));
       filter = (element) => endDate.isAfter(element.timeStamp);
     } else {
       filter = (element) => true;
@@ -68,7 +72,7 @@ class GlucoseRepoUtils {
         timeStamp: time,
         value: value,
       );
-    });
+    }).toList();
 
     return samples;
   }
