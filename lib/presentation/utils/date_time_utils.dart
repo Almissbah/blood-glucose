@@ -1,7 +1,7 @@
-import 'package:easy_localization/easy_localization.dart';
+ 
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-
+import 'package:intl/intl.dart';
 class DateTimeUtils {
   static showDatePicker(BuildContext context,
       {Function(DateTime) onChanged,

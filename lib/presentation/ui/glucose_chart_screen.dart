@@ -2,6 +2,7 @@ import 'package:blood_glucose/domain/model/samples_data_model.dart';
 import 'package:blood_glucose/presentation/bloc/samples_bloc.dart';
 import 'package:blood_glucose/presentation/ui/widget/line_chart.dart';
 import 'package:blood_glucose/presentation/utils/date_time_utils.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,6 +18,7 @@ class _GlucoseChartScreenState extends State<GlucoseChartScreen> {
   SamplesBloc _samplesBloc;
   DateTime _startDate;
   DateTime _endDate;
+  GlobalKey<LineChartState> _lineChartKey = GlobalKey<LineChartState>();
   @override
   void initState() {
     _samplesBloc = BlocProvider.of<SamplesBloc>(context);
@@ -58,7 +60,8 @@ class _GlucoseChartScreenState extends State<GlucoseChartScreen> {
       {Function(DateTime date) onPicked, String label, DateTime currentDate}) {
     return InkWell(
       onTap: () {
-        DateTimeUtils.showDatePicker(context, onConfirm: onPicked,currentTime:currentDate );
+        DateTimeUtils.showDatePicker(context,
+            onConfirm: onPicked, currentTime: currentDate);
       },
       child: Container(
         child: Column(
@@ -82,12 +85,33 @@ class _GlucoseChartScreenState extends State<GlucoseChartScreen> {
     return Column(
       children: [
         _buildDatePickers(state.data),
-        GlucoseLineChart(state.data),
+        GlucoseLineChart(
+          state.data,
+          key: _lineChartKey,
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildValueWidget(label: "Minimum", value: state.data.minValue),
-            _buildValueWidget(label: "Maximum", value: state.data.maxValue),
+            _buildValueWidget(
+              label: "Minimum",
+              value: state.data.minValue,
+              onHover: (e) {
+                _lineChartKey.currentState.highlightMin();
+              },
+              onHoverEnd: (e) {
+                _lineChartKey.currentState.resetHighlight();
+              },
+            ),
+            _buildValueWidget(
+              label: "Maximum",
+              value: state.data.maxValue,
+              onHover: (e) {
+                _lineChartKey.currentState.highlightMax();
+              },
+              onHoverEnd: (e) {
+                _lineChartKey.currentState.resetHighlight();
+              },
+            ),
           ],
         ),
         Row(
@@ -101,26 +125,34 @@ class _GlucoseChartScreenState extends State<GlucoseChartScreen> {
     );
   }
 
-  Widget _buildValueWidget({String label, double value}) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        width: 150,
-        decoration: BoxDecoration(
-            border: Border.all(color: Colors.red),
-            borderRadius: BorderRadius.all(Radius.circular(10))),
-        padding: EdgeInsets.all(5),
-        child: Column(
-          children: [
-            Text(
-              label,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              "${value}",
-              style: TextStyle(fontSize: 12),
-            )
-          ],
+  Widget _buildValueWidget(
+      {String label,
+      double value,
+      void Function(PointerHoverEvent e) onHover,
+      void Function(PointerExitEvent e) onHoverEnd}) {
+    return MouseRegion(
+      onHover: onHover,
+      onExit: onHoverEnd,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          width: 150,
+          decoration: BoxDecoration(
+              border: Border.all(color: Colors.red),
+              borderRadius: BorderRadius.all(Radius.circular(10))),
+          padding: EdgeInsets.all(5),
+          child: Column(
+            children: [
+              Text(
+                label,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                "${value}",
+                style: TextStyle(fontSize: 12),
+              )
+            ],
+          ),
         ),
       ),
     );

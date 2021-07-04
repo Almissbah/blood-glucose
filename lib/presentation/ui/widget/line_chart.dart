@@ -7,10 +7,10 @@ class GlucoseLineChart extends StatefulWidget {
   const GlucoseLineChart(this.data, {Key key}) : super(key: key);
 
   @override
-  _LineChartState createState() => _LineChartState();
+  LineChartState createState() => LineChartState();
 }
 
-class _LineChartState extends State<GlucoseLineChart> {
+class  LineChartState extends State<GlucoseLineChart> {
   bool heightlightMax = true;
   bool heightlightMin = true;
   @override
